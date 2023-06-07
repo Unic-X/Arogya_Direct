@@ -11,9 +11,14 @@ class Arogya extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: "ArogyaDirect",
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        appBarTheme: const AppBarTheme(
+          iconTheme: IconThemeData(),
+          shadowColor: Color.fromARGB(190, 11, 66, 216),
+        ),
+        primarySwatch: Colors.deepPurple,
       ),
       home: const MapScreen(),
     );
