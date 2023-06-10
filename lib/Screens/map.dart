@@ -12,23 +12,20 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _controller = Completer<
+      GoogleMapController>(); //Controller controls the map actions like position of it etc
 
-  LatLng currentLocation = const LatLng(21.1283, 81.7663);
+  LatLng currentLocation =
+      const LatLng(21.1283, 81.7663); //Latitude longitude of the college
 
-  late BitmapDescriptor currentIcon = BitmapDescriptor.defaultMarker;
+  late BitmapDescriptor currentIcon =
+      BitmapDescriptor.defaultMarker; //Not working {Custom Marker for the user}
 
-  LatLng initialLocation = const LatLng(37.422131, -122.084801);
+  LatLng initialLocation =
+      const LatLng(37.422131, -122.084801); //initial location of the marker
 
   Set<Circle> circles_ = {
-    const Circle(
-      circleId: CircleId("test"),
-      center: LatLng(21.1283, 81.7663),
-      radius: 4000,
-      strokeWidth: 2,
-      fillColor: Color.fromARGB(50, 229, 154, 3),
-    ),
+//Set of circles which will be shown to the client of different users near that region
   };
 
   @override
@@ -78,12 +75,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Arogya Direct"),
-      ),
       body: GoogleMap(
         mapType: MapType.normal,
         compassEnabled: true,
+        zoomGesturesEnabled: true,
+        zoomControlsEnabled: false,
         myLocationButtonEnabled: true,
         initialCameraPosition: CameraPosition(
           target: initialLocation,
@@ -128,10 +124,12 @@ class _MapScreenState extends State<MapScreen> {
         onToggle: (index) async {
           final GoogleMapController controller = await _controller.future;
           index == 0
-              ? controller.setMapStyle(MapStyle().night)
+              ? controller.setMapStyle(MapStyle().aubergine)
               : controller.setMapStyle(MapStyle().retro);
         },
       ),
     );
   }
+
+  Future<void> addUsers() async {}
 }

@@ -1,3 +1,4 @@
+import 'package:arogya_direct/Screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:arogya_direct/Screens/map.dart';
 
@@ -20,7 +21,7 @@ class Arogya extends StatelessWidget {
         ),
         primarySwatch: Colors.deepPurple,
       ),
-      home: const MapScreen(),
+      home: const Welcome(),
     );
   }
 }
