@@ -13,6 +13,11 @@ class Arogya extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const Welcome(),
+        '/map': (context) => const MapScreen(),
+      },
       title: "ArogyaDirect",
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
@@ -21,7 +26,6 @@ class Arogya extends StatelessWidget {
         ),
         primarySwatch: Colors.deepPurple,
       ),
-      home: const Welcome(),
     );
   }
 }

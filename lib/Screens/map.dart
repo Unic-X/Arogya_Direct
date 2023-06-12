@@ -75,6 +75,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: GoogleMap(
         mapType: MapType.normal,
         compassEnabled: true,
@@ -82,7 +83,7 @@ class _MapScreenState extends State<MapScreen> {
         zoomControlsEnabled: false,
         myLocationButtonEnabled: true,
         initialCameraPosition: CameraPosition(
-          target: initialLocation,
+          target: currentLocation,
           zoom: 14,
         ),
         markers: {
@@ -127,6 +128,21 @@ class _MapScreenState extends State<MapScreen> {
               ? controller.setMapStyle(MapStyle().aubergine)
               : controller.setMapStyle(MapStyle().retro);
         },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: null,
+        child: Container(
+          height: 75,
+          child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                IconButton(onPressed: () {}, icon: Icon(Icons.home)),
+                IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+                IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+                IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
+              ]),
+        ),
       ),
     );
   }

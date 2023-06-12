@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class Welcome extends StatefulWidget {
   const Welcome({super.key});
@@ -53,7 +52,9 @@ class _WelcomeState extends State<Welcome> {
                       ),
                     ),
                     FloatingActionButton.extended(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/map');
+                      },
                       backgroundColor: Color.fromARGB(203, 236, 80, 32),
                       label: Text("Get Started "),
                     ),
