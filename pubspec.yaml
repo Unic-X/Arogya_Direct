@@ -14,7 +14,8 @@ dependencies:
   firebase_database: ^10.2.2
   firebase_core: ^2.13.1
   geolocator:
-
+  maps_toolkit: ^2.0.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
