@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:arogya_direct/Screens/map_style.dart';
-import 'package:toggle_switch/toggle_switch.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -15,8 +15,10 @@ class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer<
       GoogleMapController>(); //Controller controls the map actions like position of it etc
 
+  final _firestore = FirebaseFirestore.instance;
+
   LatLng currentLocation =
-      const LatLng(21.1283, 81.7663); //Latitude longitude of the college
+      const LatLng(37.422131, -122.084801); //Latitude longitude of the college
 
   late BitmapDescriptor currentIcon =
       BitmapDescriptor.defaultMarker; //Not working {Custom Marker for the user}
@@ -35,9 +37,9 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
   }
 
+  //listen for location updates using GeoLocator
   Future<void> _locationListner() async {
     final GoogleMapController controller = await _controller.future;
-
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -48,7 +50,7 @@ class _MapScreenState extends State<MapScreen> {
 
     LocationSettings locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.best,
-      distanceFilter: 5,
+      distanceFilter: 0,
     );
 
     Geolocator.getPositionStream(locationSettings: locationSettings)
@@ -58,6 +60,12 @@ class _MapScreenState extends State<MapScreen> {
         target: LatLng(position!.latitude, position.longitude),
         zoom: 17,
       )));
+      await FirebaseFirestore.instance.collection('location').doc('user2').set({
+        'latitude': position!.latitude,
+        'longitude': position!.longitude,
+        'name': 'john'
+      });
+
       setState(() {
         currentLocation = LatLng(position.latitude, position.longitude);
       });
@@ -116,19 +124,6 @@ class _MapScreenState extends State<MapScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: ToggleSwitch(
-        activeBgColor: List.from({Color.fromARGB(77, 4, 241, 174)}),
-        inactiveFgColor: Color.fromARGB(193, 255, 255, 255),
-        initialLabelIndex: 0,
-        totalSwitches: 2,
-        labels: ['Night', 'Light'],
-        onToggle: (index) async {
-          final GoogleMapController controller = await _controller.future;
-          index == 0
-              ? controller.setMapStyle(MapStyle().aubergine)
-              : controller.setMapStyle(MapStyle().retro);
-        },
-      ),
       bottomNavigationBar: BottomAppBar(
         shape: null,
         child: Container(

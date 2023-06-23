@@ -7,22 +7,22 @@ environment:
   sdk: '>=3.0.3 <4.0.0'
 
 dependencies:
-  custom_info_window: ^1.0.1
   flutter:
     sdk: flutter
-  google_maps_flutter: ^2.2.8
+  google_maps_flutter:
   geolocator:
-  toggle_switch: ^2.1.0
-  flutter_svg: ^2.0.6
-
+  firebase_core: 
+  cloud_firestore : ^4.8.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-
+  flutter_lints:
+  
 flutter:
   uses-material-design: true
 
 
   assets:
      - assets/images/
+
