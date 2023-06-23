@@ -60,10 +60,10 @@ class _MapScreenState extends State<MapScreen> {
         target: LatLng(position!.latitude, position.longitude),
         zoom: 17,
       )));
-      await FirebaseFirestore.instance.collection('location').doc('user2').set({
-        'latitude': position!.latitude,
-        'longitude': position!.longitude,
-        'name': 'john'
+      await FirebaseFirestore.instance.collection('location').doc('user1').set({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+        'name': 'wick'
       });
 
       setState(() {

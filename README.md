@@ -1,3 +1,3 @@
 # Arogya Direct
 
-A flutter 
+A flutter Project that aims to simplify GeoFencing 
