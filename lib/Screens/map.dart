@@ -12,13 +12,14 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  final _usersStream =
+      FirebaseFirestore.instance.collection('location').snapshots();
+
   final Completer<GoogleMapController> _controller = Completer<
       GoogleMapController>(); //Controller controls the map actions like position of it etc
 
-  final _firestore = FirebaseFirestore.instance;
-
   LatLng currentLocation =
-      const LatLng(37.422131, -122.084801); //Latitude longitude of the college
+      const LatLng(21.1282267, 81.7653267); //Latitude longitude of the college
 
   late BitmapDescriptor currentIcon =
       BitmapDescriptor.defaultMarker; //Not working {Custom Marker for the user}
@@ -26,15 +27,43 @@ class _MapScreenState extends State<MapScreen> {
   LatLng initialLocation =
       const LatLng(37.422131, -122.084801); //initial location of the marker
 
+  final Set<Marker> markers = new Set();
+
   Set<Circle> circles_ = {
 //Set of circles which will be shown to the client of different users near that region
   };
 
+  void _updateMarkers() async {
+    _usersStream.listen(
+      (event) {
+        var list = event.docChanges;
+        for (var item in list) {
+          var itemDoc = item.doc;
+          var itemData = itemDoc.data();
+          print(
+              "ItemData 1 ${itemData?['latitude']} , long ${itemData?['longitude']}");
+          markers.add(Marker(
+              markerId: MarkerId("samaj ka"),
+              position: LatLng(itemData?['latitude'], itemData?['longitude']),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueGreen)));
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     setMarker();
+    _updateMarkers();
     _locationListner();
     super.initState();
+    _usersStream.listen((event) {});
+  }
+
+  Set<Marker> _addMarker(Marker marker) {
+    markers.add(marker);
+    return markers;
   }
 
   //listen for location updates using GeoLocator
@@ -50,7 +79,7 @@ class _MapScreenState extends State<MapScreen> {
 
     LocationSettings locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.best,
-      distanceFilter: 0,
+      distanceFilter: 1,
     );
 
     Geolocator.getPositionStream(locationSettings: locationSettings)
@@ -63,7 +92,7 @@ class _MapScreenState extends State<MapScreen> {
       await FirebaseFirestore.instance.collection('location').doc('user1').set({
         'latitude': position.latitude,
         'longitude': position.longitude,
-        'name': 'wick'
+        'name': 'wick',
       });
 
       setState(() {
@@ -94,14 +123,12 @@ class _MapScreenState extends State<MapScreen> {
           target: currentLocation,
           zoom: 14,
         ),
-        markers: {
-          Marker(
-              markerId: MarkerId("currentPos"),
-              position:
-                  LatLng(currentLocation.latitude, currentLocation.longitude),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueAzure))
-        },
+        markers: _addMarker(Marker(
+            markerId: MarkerId("currentPos"),
+            position:
+                LatLng(currentLocation.latitude, currentLocation.longitude),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure))),
         circles: {
           Circle(
             circleId: const CircleId("Larger"),
@@ -123,7 +150,6 @@ class _MapScreenState extends State<MapScreen> {
           controller.setMapStyle(MapStyle().dark);
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: null,
         child: Container(
