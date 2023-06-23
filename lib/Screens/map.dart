@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:html';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+
+
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -12,6 +16,9 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
+      
+  final usernameController = TextEditingController();
+  final userEmailController = TextEditingController();    
 
   LatLng currentLocation = const LatLng(21.1283, 81.7663);
   late BitmapDescriptor currentIcon = BitmapDescriptor.defaultMarker;
@@ -25,12 +32,14 @@ class _MapScreenState extends State<MapScreen> {
       fillColor: Color.fromARGB(50, 229, 154, 3),
     ),
   ]);
+  late DatabaseReference dbRef;
+
 
   @override
   void initState() {
-    setMarker();
     _locationListner();
     super.initState();
+    //dbRef = FirebaseDatabase.instance.ref().child('location');
   }
 
   LatLng initialLocation = const LatLng(37.422131, -122.084801);
@@ -58,23 +67,20 @@ class _MapScreenState extends State<MapScreen> {
         target: LatLng(position!.latitude, position.longitude),
         zoom: 17,
       )));
+        //Future<DoccumentReference> _addPoint() async {
+          //var pos = await location.getlocation();
+          //GeoFirePoint point = geo.point(latitude:)
+        //}
       setState(() {
         currentLocation = LatLng(position.latitude, position.longitude);
       });
     });
   }
 
-  void setMarker() async {
-    await BitmapDescriptor.fromAssetImage(
-            ImageConfiguration.empty, 'assets/marker.png')
-        .then((icon) {
-      currentIcon = icon;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("alala"),),
       body: GoogleMap(
         mapType: MapType.normal,
         compassEnabled: true,
@@ -83,6 +89,7 @@ class _MapScreenState extends State<MapScreen> {
           target: initialLocation,
           zoom: 14,
         ),
+        
         markers: {
           Marker(
               markerId: MarkerId("currentPos"),
@@ -90,6 +97,7 @@ class _MapScreenState extends State<MapScreen> {
                   LatLng(currentLocation.latitude, currentLocation.longitude),
               icon: BitmapDescriptor.defaultMarkerWithHue(
                   BitmapDescriptor.hueAzure))
+                  
         },
         circles: currentLocation == null
             ? circles_
@@ -102,6 +110,8 @@ class _MapScreenState extends State<MapScreen> {
                   strokeWidth: 0,
                   fillColor: Color.fromARGB(31, 1, 134, 251),
                 ),
+                
+                
                 Circle(
                   circleId: CircleId("test2"),
                   center: LatLng(
@@ -110,9 +120,22 @@ class _MapScreenState extends State<MapScreen> {
                   strokeWidth: 0,
                   fillColor: Color.fromARGB(53, 4, 123, 241),
                 ),
+              
+               
               },
+              
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
+          MaterialButton(
+                  onPressed: (){
+                    Map<String, String> location = {
+                      'username': usernameController.text,
+                      'useremail': userEmailController.text,
+                    };
+                    dbRef.push().set(location);
+                  },
+                );
+           
         },
       ),
     );

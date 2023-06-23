@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "147075409744",
+    "project_id": "geofencing-8afad",
+    "storage_bucket": "geofencing-8afad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147075409744:android:840cc5ec3b6dc05cba2e55",
+        "android_client_info": {
+          "package_name": "com.example.arogya_direct"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "147075409744-td43apv40mo9uafa40fbjcur4ain85qs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP_jqZpZUb0da8Wpsvwerpdtyvrsk11Eg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "147075409744-td43apv40mo9uafa40fbjcur4ain85qs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
