@@ -22,7 +22,7 @@ class Arogya extends StatelessWidget {
         '/': (context) => const Welcome(),
         '/map': (context) => const MapScreen(),
       },
-      title: "ArogyaDirect",
+      title: "Fence Mate",
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           iconTheme: IconThemeData(),
