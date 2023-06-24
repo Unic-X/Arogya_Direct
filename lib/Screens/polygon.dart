@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:arogya_direct/notification_api.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as map_tool;
@@ -8,6 +9,8 @@ class Polygon_Map extends StatefulWidget {
   const Polygon_Map({Key? key}) : super(key: key);
 
   @override
+  void initState(){
+  }
   State<Polygon_Map> createState() => _Polygon_MapState();
 }
 //samos SWASTI//Kanika egg
@@ -20,7 +23,7 @@ class _Polygon_MapState extends State<Polygon_Map> {
   List<LatLng> Polygonpoints = const [
     LatLng(23.766315, 90.425778),
     LatLng(23.76, 90.424767),
-    LatLng(23.76, 90.42),
+    LatLng(23.76, 90.4246),
     LatLng(23.76, 90.42),
     LatLng(23.76, 90.42),
     LatLng(23.72, 90.43),
@@ -29,6 +32,7 @@ class _Polygon_MapState extends State<Polygon_Map> {
   @override
   void initState() {
     super.initState();
+     NotificationApi.init();
   }
 
   void checkUpdatedLocation(LatLng pointLatLn) {
@@ -44,6 +48,7 @@ class _Polygon_MapState extends State<Polygon_Map> {
 
   @override
   Widget build(BuildContext context) {
+    NotificationApi.init();
     return Scaffold(
       body: Column(
         children: [
@@ -63,6 +68,11 @@ class _Polygon_MapState extends State<Polygon_Map> {
                   icon: markerbitmap,
                   draggable: true,
                   onDragEnd: (updatedLatLng) {
+                    NotificationApi.showNotification(
+                      body: 'Beware you are in covid zone',
+                      title: "Fence Mate",
+                      id: 1,
+                    );
                     checkUpdatedLocation(updatedLatLng);
                   },
                 ),
@@ -70,7 +80,7 @@ class _Polygon_MapState extends State<Polygon_Map> {
               polygons: {
                 Polygon(
                   polygonId: const PolygonId("1"),
-                  fillColor: Color.fromARGB(255, 4, 83, 67).withOpacity(0.1),
+                  fillColor: Color.fromARGB(255, 116, 130, 127).withOpacity(0.1),
                   strokeWidth: 2,
                   points: Polygonpoints,
                 ),
