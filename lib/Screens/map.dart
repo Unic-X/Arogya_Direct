@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:arogya_direct/Screens/map_style.dart';
@@ -137,7 +136,10 @@ class _MapScreenState extends State<MapScreen> {
       false,
     );
     if (isInSelectedArea) {
-      //notify user
+      NotificationApi.showNotification(
+          id: 2,
+          title: "Qurantine Zone",
+          body: "You are now inside a quarantine zone");
     }
   }
 
@@ -245,6 +247,7 @@ class _MapScreenState extends State<MapScreen> {
         ),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
+          controller.setMapStyle(MapStyle().uber_style);
         },
         polygons: {
           Polygon(
