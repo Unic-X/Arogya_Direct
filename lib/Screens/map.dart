@@ -4,7 +4,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:arogya_direct/Screens/map_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:math';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -50,18 +49,52 @@ class _MapScreenState extends State<MapScreen> {
           var itemData = itemDoc.data();
 
           if (uid != itemDoc.id) {
-            final String user = itemData?['user'];
             final LatLng newPosition =
                 LatLng(itemData?['latitude'], itemData?['longitude']);
             if (_markers.containsKey(itemDoc.id)) {
               Marker marker = _markers[itemDoc.id]!;
               marker = marker.copyWith(positionParam: newPosition);
+              Set<Circle> circles = {
+                Circle(
+                  circleId: CircleId("${itemDoc.id}_smaller"),
+                  center: newPosition,
+                  radius: 40,
+                  strokeWidth: 0,
+                  fillColor: Color.fromARGB(53, 241, 4, 63),
+                ),
+                Circle(
+                  circleId: CircleId("${itemDoc.id}_bigger"),
+                  center: newPosition,
+                  radius: 70,
+                  strokeWidth: 0,
+                  fillColor: Color.fromARGB(100, 160, 29, 62),
+                ),
+              };
+              _addCircles(circles);
               _addMarker(marker);
             } else {
               final Marker marker = Marker(
                 markerId: MarkerId(itemDoc.id),
                 position: newPosition,
               );
+
+              Set<Circle> circles = {
+                Circle(
+                  circleId: CircleId("${itemDoc.id}_smaller"),
+                  center: newPosition,
+                  radius: 40,
+                  strokeWidth: 0,
+                  fillColor: Color.fromARGB(53, 241, 4, 63),
+                ),
+                Circle(
+                  circleId: CircleId("${itemDoc.id}_bigger"),
+                  center: newPosition,
+                  radius: 70,
+                  strokeWidth: 0,
+                  fillColor: Color.fromARGB(100, 160, 29, 62),
+                ),
+              };
+              _addCircles(circles);
               _addMarker(marker);
             }
             setState(() {}); //render everytime
@@ -73,11 +106,7 @@ class _MapScreenState extends State<MapScreen> {
                 currentLocation.latitude,
                 currentLocation.longitude);
 
-            if (distance < 20) {
-              print("${user} within 20m");
-            } else if (distance < 50) {
-              print("${user} within 50m");
-            }
+            print(distance);
 
             print(
                 "Latitude: ${newPosition.latitude} , Longitude: ${newPosition.longitude}");
@@ -94,6 +123,11 @@ class _MapScreenState extends State<MapScreen> {
     _locationListner();
     super.initState();
     _usersStream.listen((event) {});
+  }
+
+  Set<Circle> _addCircles(Set<Circle> circles) {
+    circles_.addAll(circles);
+    return circles_;
   }
 
   Set<Marker> _addMarker(Marker marker) {
@@ -164,22 +198,26 @@ class _MapScreenState extends State<MapScreen> {
                 LatLng(currentLocation.latitude, currentLocation.longitude),
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueAzure))),
-        circles: {
-          Circle(
-            circleId: const CircleId("Larger"),
-            center: LatLng(currentLocation.latitude, currentLocation.longitude),
-            radius: 100,
-            strokeWidth: 0,
-            fillColor: const Color.fromARGB(31, 1, 134, 251),
-          ),
-          Circle(
-            circleId: const CircleId("Smaller"),
-            center: LatLng(currentLocation.latitude, currentLocation.longitude),
-            radius: 40,
-            strokeWidth: 0,
-            fillColor: const Color.fromARGB(53, 4, 123, 241),
-          ),
-        },
+        circles: _addCircles(
+          {
+            Circle(
+              circleId: const CircleId("Larger"),
+              center:
+                  LatLng(currentLocation.latitude, currentLocation.longitude),
+              radius: 100,
+              strokeWidth: 0,
+              fillColor: const Color.fromARGB(31, 1, 134, 251),
+            ),
+            Circle(
+              circleId: const CircleId("Smaller"),
+              center:
+                  LatLng(currentLocation.latitude, currentLocation.longitude),
+              radius: 40,
+              strokeWidth: 0,
+              fillColor: const Color.fromARGB(53, 4, 123, 241),
+            ),
+          },
+        ),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
           controller.setMapStyle(MapStyle().dark);
