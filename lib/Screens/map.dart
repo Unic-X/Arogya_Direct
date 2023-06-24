@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:arogya_direct/Screens/map_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:maps_toolkit/maps_toolkit.dart' as map_tool;
+import 'package:arogya_direct/Screens/notification_api.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -37,6 +40,14 @@ class _MapScreenState extends State<MapScreen> {
   Set<Circle> circles_ = {
 //Set of circles which will be shown to the client of different users near that region
   };
+
+  bool isInSelectedArea = false;
+  List<LatLng> Polygonpoints = const [
+    LatLng(21.128354, 81.7667634),
+    LatLng(21.1285167, 81.766664),
+    LatLng(21.1286697, 81.766936),
+    LatLng(21.1285068, 81.7670403),
+  ];
 
   void _updateMarkers() async {
     _usersStream.listen(
@@ -116,6 +127,20 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  void checkUpdatedLocation(LatLng pointLatLn) {
+    List<map_tool.LatLng> convertedPolygonPoints = Polygonpoints.map(
+        (point) => map_tool.LatLng(point.latitude, point.longitude)).toList();
+    setState(() {});
+    isInSelectedArea = map_tool.PolygonUtil.containsLocation(
+      map_tool.LatLng(pointLatLn.latitude, pointLatLn.longitude),
+      convertedPolygonPoints,
+      false,
+    );
+    if (isInSelectedArea) {
+      //notify user
+    }
+  }
+
   @override
   void initState() {
     setMarker();
@@ -163,7 +188,7 @@ class _MapScreenState extends State<MapScreen> {
         'longitude': position.longitude,
         'name': 'wick',
       });
-
+      checkUpdatedLocation(LatLng(position.latitude, position.longitude));
       setState(() {
         currentLocation = LatLng(position.latitude, position.longitude);
       });
@@ -220,7 +245,14 @@ class _MapScreenState extends State<MapScreen> {
         ),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
-          controller.setMapStyle(MapStyle().dark);
+        },
+        polygons: {
+          Polygon(
+            polygonId: const PolygonId("1"),
+            fillColor: Color.fromARGB(228, 255, 17, 0).withOpacity(0.1),
+            strokeWidth: 0,
+            points: Polygonpoints,
+          ),
         },
       ),
       bottomNavigationBar: BottomAppBar(

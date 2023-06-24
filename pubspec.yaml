@@ -13,6 +13,9 @@ dependencies:
   geolocator:
   firebase_core: 
   cloud_firestore : ^4.8.1
+  maps_toolkit :
+  flutter_local_notifications: ^5.0.0+1
+  rxdart: ^0.27.7
   
 dev_dependencies:
   flutter_test:
