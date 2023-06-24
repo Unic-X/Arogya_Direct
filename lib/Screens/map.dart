@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:arogya_direct/Screens/map_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -12,6 +13,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  String? uid = 'user1'; //Get the UID of the user after the authentication
+
   final _usersStream =
       FirebaseFirestore.instance.collection('location').snapshots();
 
@@ -24,10 +27,13 @@ class _MapScreenState extends State<MapScreen> {
   late BitmapDescriptor currentIcon =
       BitmapDescriptor.defaultMarker; //Not working {Custom Marker for the user}
 
+  Set<LatLng> others_pos = Set<LatLng>();
+
   LatLng initialLocation =
       const LatLng(37.422131, -122.084801); //initial location of the marker
 
   final Set<Marker> markers = new Set();
+  final Map<String, Marker> _markers = {};
 
   Set<Circle> circles_ = {
 //Set of circles which will be shown to the client of different users near that region
@@ -36,17 +42,46 @@ class _MapScreenState extends State<MapScreen> {
   void _updateMarkers() async {
     _usersStream.listen(
       (event) {
-        var list = event.docChanges;
+        var list = event.docChanges; //Listens to all the document that change
         for (var item in list) {
+          //Iterate through every changed document
+
           var itemDoc = item.doc;
           var itemData = itemDoc.data();
-          print(
-              "ItemData 1 ${itemData?['latitude']} , long ${itemData?['longitude']}");
-          markers.add(Marker(
-              markerId: MarkerId("samaj ka"),
-              position: LatLng(itemData?['latitude'], itemData?['longitude']),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueGreen)));
+
+          if (uid != itemDoc.id) {
+            final String user = itemData?['user'];
+            final LatLng newPosition =
+                LatLng(itemData?['latitude'], itemData?['longitude']);
+            if (_markers.containsKey(itemDoc.id)) {
+              Marker marker = _markers[itemDoc.id]!;
+              marker = marker.copyWith(positionParam: newPosition);
+              _addMarker(marker);
+            } else {
+              final Marker marker = Marker(
+                markerId: MarkerId(itemDoc.id),
+                position: newPosition,
+              );
+              _addMarker(marker);
+            }
+            setState(() {}); //render everytime
+            //check every other user except the current user
+
+            double distance = Geolocator.distanceBetween(
+                newPosition.latitude,
+                newPosition.longitude,
+                currentLocation.latitude,
+                currentLocation.longitude);
+
+            if (distance < 20) {
+              print("${user} within 20m");
+            } else if (distance < 50) {
+              print("${user} within 50m");
+            }
+
+            print(
+                "Latitude: ${newPosition.latitude} , Longitude: ${newPosition.longitude}");
+          }
         }
       },
     );
@@ -55,7 +90,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     setMarker();
-    _updateMarkers();
+    _updateMarkers(); //Listen to location update of other user and update the marker likewise
     _locationListner();
     super.initState();
     _usersStream.listen((event) {});
