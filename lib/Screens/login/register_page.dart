@@ -4,15 +4,15 @@ import 'package:arogya_direct/Screens/components/my_button.dart';
 import 'package:arogya_direct/Screens/components/my_textfield.dart';
 import 'package:arogya_direct/Screens/components/square_tile.dart';
 
-class LoginPage extends StatefulWidget {
+class Register_Page extends StatefulWidget {
   final Function()? onTap;
-  const LoginPage({super.key, required this.onTap});
+  const Register_Page({super.key, required this.onTap});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<Register_Page> createState() => _Register_Page();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _Register_Page extends State<Register_Page> {
   // text editing controllers
   final usernameController = TextEditingController();
 
@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         });
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: usernameController.text, password: passwordController.text);
       Navigator.pop(context);
     } catch (e) {}
@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // welcome back, you've been missed!
                 Text(
-                  'Welcome back you\'ve been missed!',
+                  'Create an account',
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontSize: 16,
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // sign in button
                 MyButton(
-                  text: "Sign In",
+                  text: "Sign Up",
                   onTap: signUserIn,
                 ),
 
@@ -158,14 +158,14 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Not a member?',
+                      'Already have an account?',
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: widget.onTap,
                       child: const Text(
-                        'Register now',
+                        'Sign In',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,

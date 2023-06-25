@@ -1,4 +1,6 @@
-import 'package:arogya_direct/Screens/polygon.dart';
+import 'package:arogya_direct/Screens/login/login.dart';
+import 'package:arogya_direct/Screens/login/manage_user.dart';
+import 'package:arogya_direct/Screens/login/register.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:arogya_direct/Screens/welcome_screen.dart';
@@ -17,17 +19,13 @@ class Arogya extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      home: const AuthPage(),
       routes: {
-        '/': (context) => const Welcome(),
+        '/welcome': (context) => const Welcome(),
         '/map': (context) => const MapScreen(),
       },
       title: "Fence Mate",
       theme: ThemeData(
-        appBarTheme: const AppBarTheme(
-          iconTheme: IconThemeData(),
-          shadowColor: Color.fromARGB(190, 11, 66, 216),
-        ),
         primarySwatch: Colors.deepPurple,
       ),
     );

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -14,7 +16,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  String? uid = 'user1'; //Get the UID of the user after the authentication
+  String? uid = FirebaseAuth.instance.currentUser?.uid;
 
   final _usersStream =
       FirebaseFirestore.instance.collection('location').snapshots();
@@ -46,6 +48,24 @@ class _MapScreenState extends State<MapScreen> {
     LatLng(21.1285167, 81.766664),
     LatLng(21.1286697, 81.766936),
     LatLng(21.1285068, 81.7670403),
+  ];
+
+  List<LatLng> Polygonpoints_ = const [
+    LatLng(21.129048, 81.764799),
+    LatLng(21.129593, 81.765022),
+    LatLng(21.129858, 81.766461),
+    LatLng(21.128975, 81.767150),
+    LatLng(21.128921, 81.766413),
+    LatLng(21.129197, 81.766187),
+    LatLng(21.128874, 81.765367),
+  ];
+
+  List<LatLng> PalmPark = const [
+    LatLng(21.127331, 81.764824),
+    LatLng(21.127811, 81.765065),
+    LatLng(21.128036, 81.765806),
+    LatLng(21.127666, 81.766052),
+    LatLng(21.127015, 81.765816),
   ];
 
   void _updateMarkers() async {
@@ -90,6 +110,7 @@ class _MapScreenState extends State<MapScreen> {
 
               Set<Circle> circles = {
                 Circle(
+                  zIndex: 2,
                   circleId: CircleId("${itemDoc.id}_smaller"),
                   center: newPosition,
                   radius: 40,
@@ -135,6 +156,22 @@ class _MapScreenState extends State<MapScreen> {
       convertedPolygonPoints,
       false,
     );
+
+    List<map_tool.LatLng> convertedPolygonPoints2 = Polygonpoints_.map(
+        (point) => map_tool.LatLng(point.latitude, point.longitude)).toList();
+    setState(() {});
+
+    bool isInSelectedArea_ = map_tool.PolygonUtil.containsLocation(
+      map_tool.LatLng(pointLatLn.latitude, pointLatLn.longitude),
+      convertedPolygonPoints2,
+      false,
+    );
+
+    if (isInSelectedArea_) {
+      NotificationApi.showNotification(
+          id: 1, title: "Inside ssFG", body: "You are now inside FG");
+    }
+
     if (isInSelectedArea) {
       NotificationApi.showNotification(
           id: 2,
@@ -149,7 +186,6 @@ class _MapScreenState extends State<MapScreen> {
     _updateMarkers(); //Listen to location update of other user and update the marker likewise
     _locationListner();
     super.initState();
-    _usersStream.listen((event) {});
   }
 
   Set<Circle> _addCircles(Set<Circle> circles) {
@@ -185,7 +221,7 @@ class _MapScreenState extends State<MapScreen> {
         target: LatLng(position!.latitude, position.longitude),
         zoom: 17,
       )));
-      await FirebaseFirestore.instance.collection('location').doc('user1').set({
+      await FirebaseFirestore.instance.collection('location').doc(uid).set({
         'latitude': position.latitude,
         'longitude': position.longitude,
         'name': 'wick',
@@ -213,7 +249,6 @@ class _MapScreenState extends State<MapScreen> {
         mapType: MapType.normal,
         compassEnabled: true,
         zoomGesturesEnabled: true,
-        zoomControlsEnabled: false,
         myLocationButtonEnabled: true,
         initialCameraPosition: CameraPosition(
           target: currentLocation,
@@ -251,10 +286,21 @@ class _MapScreenState extends State<MapScreen> {
         },
         polygons: {
           Polygon(
+              polygonId: const PolygonId("0"),
+              fillColor: Color.fromARGB(227, 81, 230, 244).withOpacity(0.4),
+              strokeWidth: 1,
+              points: Polygonpoints_),
+          Polygon(
             polygonId: const PolygonId("1"),
             fillColor: Color.fromARGB(228, 255, 17, 0).withOpacity(0.1),
-            strokeWidth: 0,
+            strokeWidth: 1,
             points: Polygonpoints,
+          ),
+          Polygon(
+            polygonId: const PolygonId("2"),
+            fillColor: Color.fromARGB(227, 73, 186, 20).withOpacity(0.1),
+            strokeWidth: 1,
+            points: PalmPark,
           ),
         },
       ),

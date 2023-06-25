@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Welcome extends StatefulWidget {
@@ -8,9 +9,15 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+  void logOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          actions: [IconButton(onPressed: logOut, icon: Icon(Icons.login))]),
       body: PageView(children: [
         Column(
           children: [
